@@ -1,12 +1,18 @@
 
 package collegecostapi.controller;
 
+import collegecostapi.model.College;
 import collegecostapi.service.CollegeCostService;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Application;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,32 +25,34 @@ import org.springframework.web.bind.annotation.RestController;
 @Path("/college")
 public class CollegeCostController{
 
+    NumberFormat formatter = new DecimalFormat("#0.00");
+    
     @Autowired
     public CollegeCostService collegeCostService;
 
-    @GetMapping("/college/{collegeName}")
-    public int getCollege(@PathVariable String collegeName, Boolean roomAndBoard) {
-        return collegeCostService.getCollege(collegeName).getTuitionInState();
-    }
-    
-//    @GET
-//    public Response getCollegeCost(
-//                    @QueryParam("collegeName") String collegeName,
-//                    @DefaultValue("false")@QueryParam("roomAndBoard") Boolean roomAndBoard)
-//                    {
-//        
-//        if (roomAndBoard){
-//            String response = "Tuition + room and board for " + collegeName +
-//                    " is $" + collegeCostService.getCollege(collegeName).getTuitionInState() +
-//                    collegeCostService.getCollege(collegeName).getRoomAndBoard();
-//            return Response.status(200).entity(response).build();
-//        }else{
-//            String response = "Tuition for " + collegeName + " is " + 
-//                    collegeCostService.getCollege(collegeName).getTuitionInState();
-//            return Response.status(200).entity(response).build();
-//        }
-//   
+//    @GetMapping("/college/{collegeName}")
+//    public int getCollege(@PathVariable String collegeName, Boolean roomAndBoard) {
+//        return collegeCostService.getCollege(collegeName).getTuitionInState();
 //    }
+//    
+    @GET
+    public Response getCollegeCost(
+                    @QueryParam("collegeName") String collegeName,
+                    @DefaultValue("false")@QueryParam("roomAndBoard") Boolean roomAndBoard)
+                    {
+        
+        if (roomAndBoard){
+            String response = "Tuition + room and board for " + collegeName +
+                    " is $" + formatter.format(collegeCostService.getCollege(collegeName).getTuitionInState() +
+                    collegeCostService.getCollege(collegeName).getRoomAndBoard());
+            return Response.status(200).entity(response).build();
+        }else{
+            String response = "Tuition for " + collegeName + " is $" + 
+                    formatter.format(collegeCostService.getCollege(collegeName).getTuitionInState());
+            return Response.status(200).entity(response).build();
+        }
+   
+    }
     
     
     
